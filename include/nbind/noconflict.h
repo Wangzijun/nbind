@@ -74,4 +74,16 @@
 #define NBIND_GETSET(getName, setName, ...) \
 definer.property(#getName, &Bound::getName, &Bound::setName, ## __VA_ARGS__)
 
+#define NBIND_ALIAS(Name, base) \
+template<> struct nbind :: BindingType<Name> : nbind :: BindingType<base> { \
+	static inline Name fromWireType(WireType arg) { \
+		return(static_cast<Name>(BindingType<Type>::fromWireType(arg))); \
+	} \
+	static inline WireType toWireType(Name arg) { \
+		return(BindingType<Type>::toWireType(static_cast<Type>(arg))); \
+	} \
+}; \
+template<> struct nbind :: Typer<Name> : nbind :: Typer<base> {};
+
+
 #endif // BUILDING_NODE_EXTENSION || __EMSCRIPTEN__
